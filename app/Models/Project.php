@@ -15,9 +15,9 @@ class Project extends Model
     {
         return $this->belongsTo(Client::class);
     }
-    public function employees()
+    public function employeeprojectAssignment()
     {
-        return $this->belongsToMany(Employee::class, 'employeeprojectassignments', 'project_id', 'employee_id')
+        return $this->belongsToMany(EmployeeProjectAssignments::class, 'employeeprojectassignments', 'project_id', 'employee_id')
                     ->withTimestamps();
     }
 

@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/clients/{id}/edit', [AdminController::class, 'editClient'])->name('editClient');
         Route::put('/clients/{id}', [AdminController::class, 'updateClient'])->name('updateClient');
         Route::delete('/clients/{id}', [AdminController::class, 'destroyClient'])->name('deleteClient');
+        Route::get('/clients', [AdminController::class, 'createClient'])->name('employee');
+
 
         // Employee routes
         Route::get('/Employee', [AdminController::class, 'indexEmployee'])->name('Employeeindex');
@@ -60,10 +62,24 @@ Route::middleware('auth')->group(function () {
         Route::post('/projects/store-phase',[ProjectController::class, 'store'] )->name('storeProjectPhase');
         Route::get('/projects/{projectId}/assign-employees', [ProjectController::class, 'assignEmployees'])->name('assignEmployees');
         Route::post('/projects/{projectId}/store-assignment', [ProjectController::class, 'storeAssignment'])->name('storeAssignment');
+ 
+       //Role of the Users
+       Route::get('/roles', [AdminController::class, 'indexRole'])->name('Roleindex');
+       Route::get('/roles/create', [AdminController::class, 'createRole'])->name('createRole');
+       Route::post('/roles/store', [AdminController::class, 'storeRole'])->name('storeRole');
+       Route::get('/roles/{id}/edit', [AdminController::class, 'editRole'])->name('editRole');
+       Route::put('/roles/{id}/update', [AdminController::class, 'updateRole'])->name('updateRole');
+       Route::delete('/roles/{id}/destroy', [AdminController::class, 'destroyRole'])->name('destroyRole');
+
+
     });
 
     // Route for viewing employees
     Route::get('/employees/index', [EmployeeController::class, 'show'])->name('employees.show');
+
+    Route::get('/home',function(){
+        return redirect('user');
+    });
 });
 
 // Authentication routes

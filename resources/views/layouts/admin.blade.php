@@ -124,6 +124,9 @@
     <li class="nav-item">
       <a class="nav-link" href="{{ route('Projectindex') }}"> Project</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('Roleindex') }}"> Role</a>
+    </li>
   </ul>
 </div>
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use  app\Employee;
+use  app\Models\Employee;
 use  app\Models\Client;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -50,7 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function clients()
     {
-        return $this->hasMany(Client::class);
+        return $this->hasOne(Client::class);
     }
 
     /**
@@ -58,6 +58,25 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function employees()
     {
-        return $this->hasMany(Employee::class);
+        return $this->hasOne(Employee::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function isClient()
+    {
+        return $this->client()->exists();
+    }
+    public function isEmployee()
+    {
+        return $this->employees()->exists();
     }
 }
