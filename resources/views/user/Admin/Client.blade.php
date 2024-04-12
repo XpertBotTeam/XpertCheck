@@ -22,8 +22,8 @@
                             <tbody>
                                 @foreach($clients as $client)
                                     <tr>
-                                        <td>{{ $client->name }}</td>
-                                        <td>{{ $client->email }}</td>
+                                        <td>{{ $client->user->name }}</td>
+                                        <td>{{ $client->user->email }}</td>
                                         <td>
                                             <form action="{{ route('deleteClient', $client->id) }}" method="POST" class="d-inline">
                                                 @csrf

@@ -11,13 +11,13 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'UserID' => 'required|exists:users,id', // Validate that the UserID exists in the users table
+            'user_id' => 'required|exists:users,id', // Validate that the UserID exists in the users table
             // You can add more validation rules here if needed
         ]);
 
         // Create the client
         $client = new Client();
-        $client->UserID = $request->input('UserID'); // Assign the provided UserID to the new client
+        $client->user_id = $request->input('user_id'); // Assign the provided UserID to the new client
         $client->save();
 
         return response()->json([

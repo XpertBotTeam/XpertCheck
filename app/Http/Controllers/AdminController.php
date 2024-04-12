@@ -52,14 +52,16 @@ class AdminController extends Controller
     
             // Create the client using the user's id
             $client = new Client();
-            $client->name = $validatedData['name']; // Set client name from user's name
+           // $client->name = $validatedData['name']; // Set client name from user's name
             $client->user_id = $user->id; // Associate the client with the user
     
             // Save the client
             $client->save();
     
-            return redirect()->route('Client')->with('success', 'Client created successfully');
+            return redirect()->route('Clientindex')->with('success', 'Client created successfully');
         } catch (\Exception $e) {
+            //\Log::error('Failed to create client: ' . $e->getMessage());
+           // dd($e->getMessage());
             return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create client']);
         }
     }
@@ -136,12 +138,14 @@ class AdminController extends Controller
     {
         // Validate input data
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
             'password' => 'required|string|min:8',
             'salary' => 'required|numeric',
         ]);
-    
+        
+        //dd($validatedData);
+
         try {
             // Create or find the user
             $user = User::firstOrCreate(
@@ -154,9 +158,6 @@ class AdminController extends Controller
     
             // Create the employee
             $employee = new Employee();
-            $employee->name = $validatedData['name'];
-            $employee->email = $validatedData['email']; // Consider removing this if it's redundant
-            $employee->password = Hash::make($validatedData['password']); // Consider removing this if it's redundant
             $employee->salary = $validatedData['salary'];
             $employee->user_id = $user->id;
     
@@ -165,9 +166,11 @@ class AdminController extends Controller
     
             return redirect()->route('Employeeindex')->with('success', 'Employee created successfully');
         } catch (\Exception $e) {
+           // dd($e->getMessage());
             return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create employee']);
         }
     }
+    
 
     public function destroyEmployee($id)
     {
@@ -185,7 +188,7 @@ public function createProject()
     return view('/user/Admin/createProject', compact('clients'));
 }
 
-public function storeProject(Request $request)
+public function storeProject(ProjectRequest $request)
 {
     $validatedData = $request->validate([
         'project_name' => 'required|string|max:255',
@@ -193,24 +196,25 @@ public function storeProject(Request $request)
         'start_date' => 'required|date',
         'end_date' => 'required|date',
         'status' => 'required|in:active,completed,on_hold',
+        'client_id' => 'nullable|exists:clients,id', // Validate that the client_id exists in the clients table (optional, since it's nullable)
     ]);
-
-    if ($request->filled('client_id')) {
-        $clientId = $request->input('client_id');
-    }
 
     $project = new Project();
     $project->project_name = $validatedData['project_name'];
-    $project->client_id = $clientId;
     $project->description = $validatedData['description'];
     $project->start_date = $validatedData['start_date'];
     $project->end_date = $validatedData['end_date'];
     $project->status = $validatedData['status'];
 
+    if ($request->filled('client_id')) {
+        $project->client_id = $validatedData['client_id'];
+    }
+
     $project->save();
 
-    return redirect()->route('Projectindex');
+    return redirect()->route('Projectindex')->with('success', 'Project created successfully');
 }
+
 
 
     public function indexProject()

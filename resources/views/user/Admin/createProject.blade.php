@@ -20,7 +20,7 @@
                                 <select id="client_id" name="client_id" class="form-control">
                                     <option value="">Select Client</option>
                                     @foreach($clients as $client)
-                                        <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                        <option value="{{ $client->id }}">{{ $client->user->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

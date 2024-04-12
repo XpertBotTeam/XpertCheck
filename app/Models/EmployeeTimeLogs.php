@@ -6,7 +6,7 @@ use App\Models\Employee;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EmployeeTimeLog extends Model
+class EmployeeTimeLogs extends Model
 {
     protected $guarded = [];
 

@@ -16,6 +16,8 @@ class Client extends Model
     protected $casts = [
        
     ];
+    public $timestamps = false;
+
     protected $guarded = [];
 
     public function user()
