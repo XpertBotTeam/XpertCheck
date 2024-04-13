@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmployeeTimeLogs extends Model
 {
+
     protected $guarded = [];
 
     public function employee()
@@ -19,6 +20,13 @@ class EmployeeTimeLogs extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    // Inside the EmployeeTimeLogs model
+    public function geofence()
+    {
+        return $this->belongsTo(\App\Models\Geofence::class);
+    }
+
 
     // Define other relationships if any
 }

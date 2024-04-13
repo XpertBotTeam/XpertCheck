@@ -5,9 +5,18 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmployeeTimeLogs;
+use App\Services\GeofenceService;
 
 class EmployeeTimeLogsController extends Controller
 {
+
+    protected $geofenceService;
+
+    public function __construct(GeofenceService $geofenceService)
+    {
+        $this->geofenceService = $geofenceService;
+    }
+
     // Create a new employee time log
     public function store(Request $request)
     {
@@ -15,8 +24,17 @@ class EmployeeTimeLogsController extends Controller
             'employee_id' => 'required|exists:employees,id', // Validate that the EmployeeID exists in the employees table
             'check_in_time' => 'required|date',
             'project_id' => 'required|exists:projects,id', // Validate that the ProjectID exists in the projects table
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',           
             // You can add more validation rules here if needed
         ]);
+
+        if (!$this->geofenceService->isWithinGeofence($request->latitude, $request->longitude)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Location is outside permitted geofence'
+            ], 403);
+        }
 
         // Create the employee time log
         $log = new EmployeeTimeLogs();

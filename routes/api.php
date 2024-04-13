@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProjectPhasesController;
 use App\Http\Controllers\API\EmployeeTimeLogsController;
 use App\Http\Controllers\API\EmployeeProjectAssignmentsController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\GeofenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,7 @@ Route::resource('/employee-time-logs', EmployeeTimeLogsController::class)->excep
 
 // Routes for EmployeeProjectAssignmentsController
 Route::resource('/employee-project-assignments', EmployeeProjectAssignmentsController::class)->except(['create', 'edit']);
+Route::apiResource('geofences', GeofenceController::class);
 
 });
 // Route::post('/clients', [ClientController::class, 'store']);

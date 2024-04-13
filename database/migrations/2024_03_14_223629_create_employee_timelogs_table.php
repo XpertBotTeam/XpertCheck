@@ -21,6 +21,9 @@ class CreateEmployeetimelogsTable extends Migration
             $table->foreignId('project_id')->constrained('projects');
             // Other time log-related fields
             $table->timestamps();
+            $table->unsignedBigInteger('geofence_id')->nullable();
+            $table->foreign('geofence_id')->references('id')->on('geofences')->onDelete('set null');
+        
         });
     }
 
