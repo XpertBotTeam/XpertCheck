@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProjectPhasesController;
 use App\Http\Controllers\API\EmployeeTimeLogsController;
 use App\Http\Controllers\API\EmployeeProjectAssignmentsController;
 use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\RoleUserController;
 use App\Http\Controllers\API\GeofenceController;
 
 /*
@@ -32,6 +33,14 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::resource('users',UserController::class);
     Route::resource('clients', ClientController::class); // For client management, only admins can create clients
     Route::resource('roles',RoleController::class);
+
+    Route::post('/role_user/assign', [RoleUserController::class, 'assignRoleToUser']);
+    Route::put('/role_user/{userId}', [RoleUserController::class, 'updateRoleForUser']);
+    Route::delete('/role_user/{userId}/{roleId}', [RoleUserController::class, 'removeRoleFromUser']);
+    Route::get('/role_user/users/{roleId}', [RoleUserController::class, 'getUsersByRole']);
+    Route::get('/role_user/roles/{userId}', [RoleUserController::class, 'getRolesByUser']);
+    
+    
     // Routes for EmployeeController
     Route::resource('employees',EmployeeController::class);
 // Route::post('/employees', [EmployeeController::class, 'store']);

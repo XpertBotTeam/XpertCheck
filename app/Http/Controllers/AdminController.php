@@ -253,7 +253,7 @@ public function storeProject(ProjectRequest $request)
         return redirect()->route('Projectindex')->with('success', 'Project updated successfully');
     }
 
-//--------------Role-------------------------
+//--------------Role-----------------------------------------------------------------
     public function indexRole()
     {
         $users = User::all(); // Fetch users from the database
