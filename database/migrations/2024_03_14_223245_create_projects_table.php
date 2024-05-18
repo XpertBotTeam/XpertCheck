@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('project_name');
+            
             $table->text('description');
             $table->date('start_date');
             $table->date('end_date');
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             // Other project-related fields
             $table->timestamps();
+         
         });
     }
 

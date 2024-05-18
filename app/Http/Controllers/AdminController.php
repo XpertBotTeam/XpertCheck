@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProjectRequest;
 use App\Models\Employee;
 use App\Models\Project;
 use App\Models\Client;
@@ -90,13 +92,30 @@ class AdminController extends Controller
 
     public function updateClient(Request $request, $id)
     {
+        // Find the client by ID
+        $client = Client::findOrFail($id);
+    
+        // Retrieve the user associated with the client
+        $user = User::findOrFail($client->user_id);
+    
+        // Validate the request data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
         ]);
-
-        $client = Client::findOrFail($id);
-        $client->update($validatedData);
+    
+        // Update the user's name and email
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+    
+        // Save the changes to the user
+        $user->save();
+    
+        // Redirect with success message
         return redirect()->route('Clientindex')->with('success', 'Client updated successfully');
     }
 //-----------------------Employee------------------------
@@ -112,23 +131,43 @@ class AdminController extends Controller
         return view('/user/Admin/editEmployee', compact('employee'));
     }
 
+
     public function updateEmployee(Request $request, $id)
     {
+        // Find the employee by ID
+        $employee = Employee::findOrFail($id);
+    
+        // Retrieve the user associated with the employee
+        $user = User::findOrFail($employee->user_id);
+    
+        // Validate the request data
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:employees,email,' . $id,
-            'salary' => 'required|numeric',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'salary' => 'required|numeric|regex:/^\d{1,10}(\.\d{1,2})?$/',
         ]);
-
-        $employee = Employee::findOrFail($id);
-        $employee->name = $validatedData['name'];
-        $employee->email = $validatedData['email'];
+    
+        // Update the user's name and email
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+    
+        // Save the changes to the user
+        $user->save();
+    
+        // Update the employee's salary
         $employee->salary = $validatedData['salary'];
+    
+        // Save the changes to the employee
         $employee->save();
-
+    
+        // Redirect with success message
         return redirect()->route('Employeeindex')->with('success', 'Employee updated successfully');
     }
-
+    
     public function createEmployee()
     {
         return view('/user/Admin/createEmployee');
@@ -190,31 +229,21 @@ public function createProject()
 
 public function storeProject(ProjectRequest $request)
 {
-    $validatedData = $request->validate([
-        'project_name' => 'required|string|max:255',
-        'description' => 'required|string',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date',
-        'status' => 'required|in:active,completed,on_hold',
-        'client_id' => 'nullable|exists:clients,id', // Validate that the client_id exists in the clients table (optional, since it's nullable)
-    ]);
+    // The validated data will be available as $request->validated()
+    $validatedData = $request->validated();
 
     $project = new Project();
     $project->project_name = $validatedData['project_name'];
+    $project->client_id = $validatedData['client_id'];
     $project->description = $validatedData['description'];
     $project->start_date = $validatedData['start_date'];
     $project->end_date = $validatedData['end_date'];
     $project->status = $validatedData['status'];
 
-    if ($request->filled('client_id')) {
-        $project->client_id = $validatedData['client_id'];
-    }
-
     $project->save();
 
     return redirect()->route('Projectindex')->with('success', 'Project created successfully');
 }
-
 
 
     public function indexProject()

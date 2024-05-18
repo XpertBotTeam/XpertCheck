@@ -20,6 +20,7 @@ class ClientController extends Controller
         $client->user_id = $request->input('user_id'); // Assign the provided UserID to the new client
         $client->save();
 
+        
         return response()->json([
             "status" => true,
             "message" => "Client created successfully",

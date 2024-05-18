@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('employee_project_assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained('employees');
-            $table->foreignId('project_id')->constrained('projects');
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             $table->date('assignment_date');
             // Other assignment-related fields
             $table->timestamps();

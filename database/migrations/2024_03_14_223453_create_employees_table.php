@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->decimal('salary', 10, 2);
-          
         });
     }
 
