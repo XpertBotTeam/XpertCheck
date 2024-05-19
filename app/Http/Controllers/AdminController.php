@@ -239,49 +239,53 @@ public function storeProject(ProjectRequest $request)
     $project->start_date = $validatedData['start_date'];
     $project->end_date = $validatedData['end_date'];
     $project->status = $validatedData['status'];
+    $project->latitude = $validatedData['latitude'];
+    $project->longitude = $validatedData['longitude'];
+    $project->radius = $validatedData['radius'];
 
     $project->save();
 
     return redirect()->route('Projectindex')->with('success', 'Project created successfully');
 }
 
+public function indexProject()
+{
+    $projects = Project::all();
+    return view('/user/Admin/Project', ['projects' => $projects]);
+}
 
-    public function indexProject()
-    {
-        $projects = Project::all();
-        return view('/user/Admin/Project', ['projects' => $projects]);
-    }
+public function destroyProject($id)
+{
+    $project = Project::findOrFail($id);
+    $project->delete();
+    return redirect()->route('Projectindex')->with('success', 'Project deleted successfully');
+}
 
+public function editProject($id)
+{
+    $project = Project::findOrFail($id);
+    $clients = Client::all(); // Fetch clients to be used in the edit form
+    return view('/user/Admin/editProject', ['project' => $project, 'clients' => $clients]);
+}
 
-    public function destroyProject($id)
-    {
-        $project = Project::findOrFail($id);
-        $project->delete();
-        return redirect()->route('Projectindex')->with('success', 'Project deleted successfully');
-    }
+public function updateProject(Request $request, $id)
+{
+    $validatedData = $request->validate([
+        'project_name' => 'required|string|max:255',
+        'description' => 'required|string',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date',
+        'status' => 'required|in:active,completed,on_hold',
+        'latitude' => 'nullable|numeric',
+        'longitude' => 'nullable|numeric',
+        'radius' => 'nullable|numeric',
+    ]);
 
-    public function editProject($id)
-    {
-        $project = Project::findOrFail($id);
-        return view('/user/Admin/editProject', ['project' => $project]);
-    }
+    $project = Project::findOrFail($id);
+    $project->update($validatedData);
 
-    public function updateProject(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'project_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'status' => 'required|in:active,completed,on_hold',
-        ]);
-
-        $project = Project::findOrFail($id);
-        $project->update($validatedData);
-
-        return redirect()->route('Projectindex')->with('success', 'Project updated successfully');
-    }
-
+    return redirect()->route('Projectindex')->with('success', 'Project updated successfully');
+}
 //--------------Role-----------------------------------------------------------------
     public function indexRole()
     {

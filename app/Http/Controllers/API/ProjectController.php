@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Http\Requests\ProjectRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -19,6 +20,9 @@ class ProjectController extends Controller
             'end_date' => 'required|date',
             'status' => 'required|in:active,completed,on_hold',
             'client_id' => 'required|exists:clients,id', // Validate that the ClientID exists in the clients table
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'radius' => 'required|numeric',
             // You can add more validation rules here if needed
         ]);
 
@@ -30,6 +34,9 @@ class ProjectController extends Controller
         $project->end_date = $request->input('end_date');
         $project->status = $request->input('status');
         $project->client_id = $request->input('client_id');
+        $project->latitude = $request->input('latitude');
+        $project->longitude = $request->input('longitude');
+        $project->radius = $request->input('radius');
         // Add other properties if needed
         $project->save();
 
@@ -69,8 +76,6 @@ class ProjectController extends Controller
     }
 
     // Update a project
-
-  
     public function update(ProjectRequest $request, $id)
     {
         $project = Project::find($id);
@@ -105,4 +110,41 @@ class ProjectController extends Controller
         ]);
     }
 
+    // Check project proximity
+    public function checkProximity(Request $request)
+    {
+        // Validate request parameters
+        $validatedData = $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'radius' => 'required|numeric',
+        ]);
+    
+        // Extract validated data
+        $latitude = $validatedData['latitude'];
+        $longitude = $validatedData['longitude'];
+        $radius = $validatedData['radius'];
+    
+        // Query projects within the specified proximity using Haversine formula
+        $projects = Project::selectRaw("id, project_name, description, status, latitude, longitude, 
+            ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance", [$latitude, $longitude, $latitude, $longitude, $latitude])
+            ->having("distance", "<", $radius)
+            ->orderBy("distance")
+            ->get();
+    
+        // Check if projects were found within the specified proximity
+        if ($projects->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No projects found within the specified radius.',
+            ], 404);
+        }
+    
+        // Return the result
+        return response()->json([
+            'status' => true,
+            'data' => $projects,
+            'message' => 'Projects found within the specified radius.',
+        ]);
+    }
 }

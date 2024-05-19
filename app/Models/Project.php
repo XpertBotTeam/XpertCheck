@@ -5,11 +5,25 @@ use App\Models\ProjectPhase;
 use App\Models\Employee;
 use App\Models\Client;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
+    protected $fillable = [
+        'project_name',
+        'description',
+        'start_date',
+        'end_date',
+        'status',
+        'client_id',
+        'latitude',
+        'longitude',
+        'radius',
+    ];
 
     public function client()
     {
